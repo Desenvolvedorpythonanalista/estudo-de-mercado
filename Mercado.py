@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-# Dados
+# Dados das tabelas existentes
 data_tabela_ticket_medio = {
     'Mercado/Indivíduo': ['Luciano Hang', 'Silvio Santos', 'Airbnb', 'Cibersegurança', 'Marketing Digital', 'Tecnologia de SaaS', 'Fintechs', 'Tecnologia de Saúde', 'Banco', 'Agronegócio'],
     'Faturamento Anual Global Estimado': ['~R$ 12 bilhões', '~R$ 3 bilhões (SBT e outros)', '~R$ 10 bilhões (2023)', '~R$ 220 bilhões (global)', '~R$ 600 bilhões (global)', '~R$ 750 bilhões (global)', '~R$ 500 bilhões (global)', '~R$ 250 bilhões (global)', '~R$ 6 trilhões (global)', '~R$ 7 trilhões (global)'],
@@ -44,6 +44,19 @@ data_tabela_nacional = {
     'Exemplos de Empresas': ['Havan', 'SBT, Sistema Brasileiro de Televisão', 'Airbnb', 'Tempest, Kaspersky', 'Nubank, GuiaBolso', 'Totvs, Linx', 'PagSeguro, Stone', 'Dasa, Hapvida', 'Itaú Unibanco, Bradesco', 'Cargill, JBS']
 }
 
+# Dados da nova tabela
+data_tabela_investimento = {
+    'Mercado/Indivíduo': ['Luciano Hang', 'Silvio Santos', 'Airbnb', 'Cibersegurança', 'Marketing Digital', 'Tecnologia de SaaS', 'Fintechs', 'Tecnologia de Saúde', 'Banco', 'Agronegócio'],
+    'Número de Transações Global': ['~100 milhões', '~10 milhões', '~100 milhões', '~5 milhões', '~1 bilhão', '~50 milhões', '~2 bilhões', '~1 bilhão', '~3 bilhões', '~1,5 bilhões'],
+    'Número de Transações Nacional': ['~60 milhões', '~5 milhões', '~10 milhões', '~500 mil', '~150 milhões', '~10 milhões', '~400 milhões', '~150 milhões', '~500 milhões', '~300 milhões'],
+    'Tempo Médio para Estabilização Global': ['~5 anos', '~10 anos', '~5 anos', '~7 anos', '~3 anos', '~4 anos', '~4 anos', '~6 anos', '~20 anos', '~10 anos'],
+    'Tempo Médio para Estabilização Nacional': ['~4 anos', '~8 anos', '~3 anos', '~5 anos', '~2 anos', '~3 anos', '~3 anos', '~5 anos', '~15 anos', '~8 anos'],
+    'Investimento Médio para Começar em Cada Mercado do Zero': ['~R$ 50 milhões', '~R$ 20 milhões', '~R$ 100 milhões', '~R$ 30 milhões', '~R$ 200 milhões', '~R$ 80 milhões', '~R$ 150 milhões', '~R$ 100 milhões', '~R$ 500 milhões', '~R$ 300 milhões'],
+    'Gasto Inicial no Primeiro Ano (Global)': ['~R$ 50 milhões', '~R$ 50 milhões', '~R$ 100 milhões', '~R$ 30 milhões', '~R$ 200 milhões', '~R$ 80 milhões', '~R$ 150 milhões', '~R$ 100 milhões', '~R$ 500 milhões', '~R$ 300 milhões'],
+    'Gasto Inicial no Primeiro Ano (Nacional)': ['~R$ 20 milhões', '~R$ 10 milhões', '~R$ 50 milhões', '~R$ 10 milhões', '~R$ 80 milhões', '~R$ 30 milhões', '~R$ 60 milhões', '~R$ 40 milhões', '~R$ 200 milhões', '~R$ 120 milhões'],
+    'Investimento Inicial para Iniciantes': ['~R$ 5 milhões', '~R$ 1 milhão', '~R$ 10 milhões', '~R$ 1 milhão', '~R$ 2 milhões', '~R$ 500 mil', '~R$ 2 milhões', '~R$ 1 milhão', '~R$ 10 milhões', '~R$ 5 milhões']
+}
+
 # Streamlit app
 st.title('Análise de Dados de Mercado')
 
@@ -53,7 +66,7 @@ st.sidebar.title('VIRTUS GLOBAL')
 # Filtro para selecionar a tabela
 tabela_selecionada = st.sidebar.selectbox(
     'ESTUDO DE MERCADO: Selecione a Tabela',
-    ['Tabela de Ticket Médio Global', 'Tabela de Ticket Médio Nacional', 'Tabela Global', 'Tabela Nacional']
+    ['Tabela de Ticket Médio Global', 'Tabela de Ticket Médio Nacional', 'Tabela Global', 'Tabela Nacional', 'Tabela de Investimento']
 )
 
 # Filtro para selecionar as notas gerais
@@ -81,6 +94,11 @@ elif tabela_selecionada == 'Tabela Global':
 elif tabela_selecionada == 'Tabela Nacional':
     st.subheader('Tabela Nacional')
     df_tabela = pd.DataFrame(data_tabela_nacional)
+    st.write(df_tabela)
+
+elif tabela_selecionada == 'Tabela de Investimento':
+    st.subheader('Tabela de Investimento')
+    df_tabela = pd.DataFrame(data_tabela_investimento)
     st.write(df_tabela)
 
 # Mostrar notas gerais se selecionado
