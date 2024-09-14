@@ -1,7 +1,14 @@
 import pandas as pd
 import streamlit as st
 
-def calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_mensais, margem_lucro, valor_por_venda, taxa_cambio):
+def calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_mensais, margem_lucro, valor_por_venda, taxa_cambio, moeda):
+    # Função para converter valores
+    def converter_para_moeda(valor, moeda):
+        if moeda == "BRL":
+            return valor * taxa_cambio
+        else:
+            return valor
+
     valor_fundador_mensal = investimento_desejado * (1 - distribuicao_lucro)
     valor_fundador_anual = valor_fundador_mensal * 12
     distribuicao_lucro_investidor = distribuicao_lucro
@@ -26,12 +33,6 @@ def calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_men
 
     rentabilidade_mensal_investidores = (distribuicao_lucro_investidor * faturamento_necessario_mensal) / investimento_desejado
     rentabilidade_mensal_fundador = (distribuicao_lucro_fundador * faturamento_necessario_mensal) / investimento_desejado
-
-    def converter_para_moeda(valor, moeda):
-        if moeda == "BRL":
-            return valor * taxa_cambio
-        else:
-            return valor
 
     return {
         "Investimento Desejado": f"{converter_para_moeda(investimento_desejado, moeda):,.2f} {moeda}",
@@ -147,13 +148,11 @@ def main():
     # Button to calculate
     if st.button("Calcular"):
         # Calculations
-        resultados = calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_mensais, margem_lucro, valor_por_venda, taxa_cambio)
+        resultados = calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_mensais, margem_lucro, valor_por_venda, taxa_cambio, moeda)
 
         # Display results
         st.write("### Resultados Calculados")
         for chave, valor in resultados.items():
-            if moeda == "BRL" and "USD" in valor:
-                valor = valor.replace("USD", "BRL")
             st.write(f"**{chave}:** {valor}")
 
     # Sidebar for static data
