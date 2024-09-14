@@ -135,13 +135,15 @@ def main():
     custos_fixos_mensais = st.number_input("Custos Fixos Mensais (USD)", value=49019.61)
     margem_lucro = st.slider("Margem de Lucro", min_value=0.0, max_value=1.0, value=0.50, step=0.01)
 
-    # Calculations
-    resultados = calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_mensais, margem_lucro)
+    # Button to calculate
+    if st.button("Calcular"):
+        # Calculations
+        resultados = calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_mensais, margem_lucro)
 
-    # Display results
-    st.write("### Resultados Calculados")
-    for chave, valor in resultados.items():
-        st.write(f"**{chave}:** {valor}")
+        # Display results
+        st.write("### Resultados Calculados")
+        for chave, valor in resultados.items():
+            st.write(f"**{chave}:** {valor}")
 
     # Sidebar for static data
     st.sidebar.header('Dados Estáticos')
