@@ -42,8 +42,8 @@ def calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_men
         "Margem de Lucro": f"{margem_lucro * 100:.2f}%",
         "Faturamento Anual Previsto": f"{converter_para_moeda(faturamento_necessario_anual, moeda):,.2f} {moeda}",
         "Faturamento Mensal Previsto": f"{converter_para_moeda(faturamento_necessario_mensal, moeda):,.2f} {moeda}",
-        "Número de Vendas com 100% de Comissão (Ano)": f"{int(numero_vendas_com_100_comissao_ano)} imóveis ou clientes",
-        "Número de Vendas com 30% de Comissão (Mês)": f"{int(numero_vendas_com_30_comissao_mes)} imóveis ou clientes",
+        "Número de Vendas com 100% de Comissão (Ano)": f"{int(numero_vendas_com_100_comissao_ano)} produtos ou clientes",
+        "Número de Vendas com 30% de Comissão (Mês)": f"{int(numero_vendas_com_30_comissao_mes)} produtos ou clientes",
         "Valor de Administração (30%)": f"{converter_para_moeda(faturamento_necessario_mensal * 0.30, moeda):,.2f} {moeda}",
         "Tempo para Recuperar Investimento Inicial (cada sócio)": "Aproximadamente 7,5 meses",
         "Meta do Mês para Bater o Faturamento Mensal Médio": f"{converter_para_moeda(faturamento_necessario_mensal, moeda):,.2f} {moeda}",
@@ -52,7 +52,10 @@ def calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_men
         "Distribuição de Lucro para Sócio Fundador": f"{distribuicao_lucro_fundador * 100:.2f}%",
         "Valor para Sócio Fundador (anual)": f"{converter_para_moeda(valor_fundador_anual, moeda):,.2f} {moeda}",
         "Valor para Sócio Fundador (mensal)": f"{converter_para_moeda(valor_fundador_mensal, moeda):,.2f} {moeda}",
-        "Notas": f"Valor para Sócio Fundador (anual): {converter_para_moeda(valor_fundador_anual * 5, moeda):,.2f} {moeda}\nValor para Sócio Fundador (mensal): {converter_para_moeda(valor_fundador_mensal * 5, moeda):,.2f} {moeda}",
+        "Notas": (
+            f"Valor para Sócio Fundador (anual): {converter_para_moeda(valor_fundador_anual, moeda):,.2f} {moeda}\n"
+            f"Valor para Sócio Fundador (mensal): {converter_para_moeda(valor_fundador_mensal, moeda):,.2f} {moeda}"
+        ),
         "Rentabilidade Mensal (Investidores)": f"{rentabilidade_mensal_investidores * 100:.2f}%",
         "Rentabilidade Mensal (Sócio Fundador)": f"{rentabilidade_mensal_fundador * 100:.2f}%",
         "Valor por Venda/Assinatura": f"{converter_para_moeda(valor_por_venda, moeda):,.2f} {moeda}"
@@ -69,8 +72,8 @@ def atualizar_tabelas():
             "Margem de Lucro": "50%",
             "Faturamento Anual Previsto": "1.176.470,59 USD",
             "Faturamento Mensal Previsto": "98.823,53 USD",
-            "Número de Vendas com 100% de Comissão (Ano)": "120 imóveis",
-            "Número de Vendas com 30% de Comissão (Mês)": "10 imóveis",
+            "Número de Vendas com 100% de Comissão (Ano)": "120 produtos",
+            "Número de Vendas com 30% de Comissão (Mês)": "10 produtos",
             "Valor de Administração (30%)": "29.647,06 USD",
             "Tempo para Recuperar Investimento Inicial (cada sócio)": "Aproximadamente 7,5 meses",
             "Meta do Mês para Bater o Faturamento Mensal Médio": "98.823,53 USD",
@@ -79,7 +82,10 @@ def atualizar_tabelas():
             "Distribuição de Lucro para Sócio Fundador": "70%",
             "Valor para Sócio Fundador (anual)": "840.000,00 USD",
             "Valor para Sócio Fundador (mensal)": "70.000,00 USD",
-            "Notas": "Valor para Sócio Fundador (anual): 4.200.000 BRL\nValor para Sócio Fundador (mensal): 350.000 BRL",
+            "Notas": (
+                "Valor para Sócio Fundador (anual): 4.200.000 BRL\n"
+                "Valor para Sócio Fundador (mensal): 350.000 BRL"
+            ),
             "Rentabilidade Mensal (Investidores)": "30,00%",
             "Rentabilidade Mensal (Sócio Fundador)": "70,00%"
         },
@@ -91,8 +97,8 @@ def atualizar_tabelas():
             "Margem de Lucro": "50%",
             "Faturamento Anual Previsto": "11.764.705,88 USD",
             "Faturamento Mensal Previsto": "980.392,86 USD",
-            "Número de Vendas com 100% de Comissão (Ano)": "1.200 imóveis",
-            "Número de Vendas com 30% de Comissão (Mês)": "100 imóveis",
+            "Número de Vendas com 100% de Comissão (Ano)": "1.200 produtos",
+            "Número de Vendas com 30% de Comissão (Mês)": "100 produtos",
             "Valor de Administração (30%)": "294.117,65 USD",
             "Tempo para Recuperar Investimento Inicial (cada sócio)": "Aproximadamente 7,5 meses",
             "Meta do Mês para Bater o Faturamento Mensal Médio": "980.392,86 USD",
@@ -101,7 +107,10 @@ def atualizar_tabelas():
             "Distribuição de Lucro para Sócio Fundador": "70%",
             "Valor para Sócio Fundador (anual)": "8.400.000,00 USD",
             "Valor para Sócio Fundador (mensal)": "700.000,00 USD",
-            "Notas": "Valor para Sócio Fundador (anual): 42.000.000 BRL\nValor para Sócio Fundador (mensal): 3.500.000 BRL",
+            "Notas": (
+                "Valor para Sócio Fundador (anual): 42.000.000 BRL\n"
+                "Valor para Sócio Fundador (mensal): 3.500.000 BRL"
+            ),
             "Rentabilidade Mensal (Investidores)": "30,00%",
             "Rentabilidade Mensal (Sócio Fundador)": "70,00%"
         },
@@ -113,8 +122,8 @@ def atualizar_tabelas():
             "Margem de Lucro": "50%",
             "Faturamento Anual Previsto": "11.764.705,88 USD",
             "Faturamento Mensal Previsto": "980.392,86 USD",
-            "Número de Vendas com 100% de Comissão (Ano)": "1.200 imóveis",
-            "Número de Vendas com 30% de Comissão (Mês)": "100 imóveis",
+            "Número de Vendas com 100% de Comissão (Ano)": "1.200 produtos",
+            "Número de Vendas com 30% de Comissão (Mês)": "100 produtos",
             "Valor de Administração (30%)": "294.117,65 USD",
             "Tempo para Recuperar Investimento Inicial (cada sócio)": "Aproximadamente 7,5 meses",
             "Meta do Mês para Bater o Faturamento Mensal Médio": "980.392,86 USD",
@@ -123,12 +132,15 @@ def atualizar_tabelas():
             "Distribuição de Lucro para Sócio Fundador": "70%",
             "Valor para Sócio Fundador (anual)": "8.400.000,00 USD",
             "Valor para Sócio Fundador (mensal)": "700.000,00 USD",
-            "Notas": "Valor para Sócio Fundador (anual): 42.000.000 BRL\nValor para Sócio Fundador (mensal): 3.500.000 BRL",
+            "Notas": (
+                "Valor para Sócio Fundador (anual): 42.000.000 BRL\n"
+                "Valor para Sócio Fundador (mensal): 3.500.000 BRL"
+            ),
             "Rentabilidade Mensal (Investidores)": "30,00%",
             "Rentabilidade Mensal (Sócio Fundador)": "70,00%"
         }
     }
-    
+
     return dados
 
 def main():
@@ -140,29 +152,35 @@ def main():
     custos_fixos_mensais = st.number_input("Custos Fixos Mensais (USD)", value=49019.61)
     margem_lucro = st.slider("Margem de Lucro", min_value=0.0, max_value=1.0, value=0.50, step=0.01)
     valor_por_venda = st.number_input("Valor por Venda/Assinatura (USD)", value=5000.00)
-    taxa_cambio = st.number_input("Taxa de Câmbio (USD para BRL)", value=5.00)
+    quantidade_produtos = st.number_input("Quantidade de Produtos ou Clientes", value=16, min_value=1)
 
-    # Currency filter
+    # Barra lateral para moeda
     moeda = st.sidebar.selectbox("Escolha a Moeda", options=["USD", "BRL"])
 
-    # Button to calculate
-    if st.button("Calcular"):
-        # Calculations
-        resultados = calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_mensais, margem_lucro, valor_por_venda, taxa_cambio, moeda)
+    # Taxa de Câmbio opcional na barra lateral
+    taxa_cambio = st.sidebar.number_input("Taxa de Câmbio (USD para BRL)", value=5.00, format="%f")
 
-        # Display results
+    # Botão para calcular
+    if st.button("Calcular"):
+        # Cálculos
+        resultados = calcular_valores(
+            investimento_desejado, distribuicao_lucro, custos_fixos_mensais, margem_lucro,
+            valor_por_venda, taxa_cambio, moeda
+        )
+
+        # Exibir resultados
         st.write("### Resultados Calculados")
         for chave, valor in resultados.items():
             st.write(f"**{chave}:** {valor}")
 
-    # Sidebar for static data
+    # Barra lateral para dados estáticos
     st.sidebar.header('Dados Estáticos')
     mostrar_dados_estaticos = st.sidebar.checkbox('Mostrar Dados Estáticos', value=True)
 
     if mostrar_dados_estaticos:
         dados = atualizar_tabelas()
 
-        # Sidebar filter
+        # Filtro de ano
         ano_selecionado = st.sidebar.selectbox("Escolha o Ano", options=[2030, 2035, 2040])
 
         st.sidebar.write("### Dados do Ano Selecionado")
