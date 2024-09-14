@@ -1,4 +1,4 @@
-import pandas as pd 
+import pandas as pd
 import streamlit as st
 
 def calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_mensais, margem_lucro):
@@ -99,32 +99,65 @@ def atualizar_tabelas():
             "Notas": "Valor para Sócio Fundador (anual): 42.000.000 BRL\nValor para Sócio Fundador (mensal): 3.500.000 BRL",
             "Rentabilidade Mensal (Investidores)": "30,00%",
             "Rentabilidade Mensal (Sócio Fundador)": "70,00%"
+        },
+        2040: {
+            "Investimento Desejado": "10.000.000 USD",
+            "Distribuição de Lucro para o Investidor": "30%",
+            "Custos Fixos (Mês)": "4.901.960,78 USD",
+            "Custos Fixos (Ano)": "58.823.529,41 USD",
+            "Margem de Lucro": "50%",
+            "Faturamento Anual Previsto": "117.647.058,82 USD",
+            "Faturamento Mensal Previsto": "9.803.921,57 USD",
+            "Número de Vendas com 100% de Comissão (Ano)": "12.000 imóveis",
+            "Número de Vendas com 30% de Comissão (Mês)": "1.000 imóveis",
+            "Valor de Administração (30%)": "2.941.176,47 USD",
+            "Tempo para Recuperar Investimento Inicial (cada sócio)": "Aproximadamente 7,5 meses",
+            "Meta do Mês para Bater o Faturamento Mensal Médio": "9.803.921,57 USD",
+            "Valor para Investidores (anual)": "3.000.000,00 USD",
+            "Valor para Investidores (mensal)": "250.000,00 USD",
+            "Distribuição de Lucro para Sócio Fundador": "70%",
+            "Valor para Sócio Fundador (anual)": "84.000.000,00 USD",
+            "Valor para Sócio Fundador (mensal)": "7.000.000,00 USD",
+            "Notas": "Valor para Sócio Fundador (anual): 420.000.000 BRL\nValor para Sócio Fundador (mensal): 35.000.000 BRL",
+            "Rentabilidade Mensal (Investidores)": "30,00%",
+            "Rentabilidade Mensal (Sócio Fundador)": "70,00%"
         }
     }
     
     return dados
 
-# Streamlit Interface
-st.title("Calculadora de Rentabilidade e Vendas")
+def main():
+    st.title("Calculadora de Rentabilidade e Vendas")
 
-# Inputs
-investimento_desejado = st.number_input("Investimento Desejado (USD)", value=1000000.00)
-distribuicao_lucro = st.slider("Distribuição de Lucro para o Investidor", min_value=0.0, max_value=1.0, value=0.30, step=0.01)
-custos_fixos_mensais = st.number_input("Custos Fixos Mensais (USD)", value=49019.61)
-margem_lucro = st.slider("Margem de Lucro", min_value=0.0, max_value=1.0, value=0.50, step=0.01)
+    # Inputs
+    investimento_desejado = st.number_input("Investimento Desejado (USD)", value=1000000.00)
+    distribuicao_lucro = st.slider("Distribuição de Lucro para o Investidor", min_value=0.0, max_value=1.0, value=0.30, step=0.01)
+    custos_fixos_mensais = st.number_input("Custos Fixos Mensais (USD)", value=49019.61)
+    margem_lucro = st.slider("Margem de Lucro", min_value=0.0, max_value=1.0, value=0.50, step=0.01)
 
-# Calculations
-resultados = calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_mensais, margem_lucro)
+    # Calculations
+    resultados = calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_mensais, margem_lucro)
 
-# Display results
-st.write("### Resultados Calculados")
-for chave, valor in resultados.items():
-    st.write(f"**{chave}:** {valor}")
-
-# Display static data for 2030 and 2035
-dados = atualizar_tabelas()
-st.write("### Dados Estáticos")
-for ano, info in dados.items():
-    st.write(f"#### Ano {ano}")
-    for chave, valor in info.items():
+    # Display results
+    st.write("### Resultados Calculados")
+    for chave, valor in resultados.items():
         st.write(f"**{chave}:** {valor}")
+
+    # Sidebar for static data
+    st.sidebar.header('Dados Estáticos')
+    mostrar_dados_estaticos = st.sidebar.checkbox('Mostrar Dados Estáticos', value=True)
+
+    if mostrar_dados_estaticos:
+        dados = atualizar_tabelas()
+
+        # Sidebar filter
+        ano_selecionado = st.sidebar.selectbox("Escolha o Ano", options=[2030, 2035, 2040])
+
+        st.sidebar.write("### Dados do Ano Selecionado")
+        st.sidebar.write(pd.DataFrame(dados[ano_selecionado].items(), columns=['Campo', 'Valor']).set_index('Campo'))
+
+        st.write("### Dados Estáticos")
+        st.write(pd.DataFrame(dados[ano_selecionado].items(), columns=['Campo', 'Valor']).set_index('Campo'))
+    
+if __name__ == "__main__":
+    main()
