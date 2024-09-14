@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
 
-def calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_mensais, margem_lucro):
+def calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_mensais, margem_lucro, valor_por_venda, taxa_cambio):
     valor_fundador_mensal = investimento_desejado * (1 - distribuicao_lucro)
     valor_fundador_anual = valor_fundador_mensal * 12
     distribuicao_lucro_investidor = distribuicao_lucro
@@ -19,38 +19,42 @@ def calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_men
     else:
         numero_vendas_com_100_comissao_ano = 0
     
-    if faturamento_necessario_mensal > 0:
-        numero_vendas_com_30_comissao_mes = custo_fixo_mensal / (faturamento_necessario_mensal * 0.30)
+    if valor_por_venda > 0:
+        numero_vendas_com_30_comissao_mes = custo_fixo_mensal / (valor_por_venda * 0.30)
     else:
         numero_vendas_com_30_comissao_mes = 0
 
     rentabilidade_mensal_investidores = (distribuicao_lucro_investidor * faturamento_necessario_mensal) / investimento_desejado
     rentabilidade_mensal_fundador = (distribuicao_lucro_fundador * faturamento_necessario_mensal) / investimento_desejado
 
-    valor_por_venda = faturamento_necessario_mensal / (numero_vendas_com_30_comissao_mes if numero_vendas_com_30_comissao_mes > 0 else 1)
+    def converter_para_moeda(valor, moeda):
+        if moeda == "BRL":
+            return valor * taxa_cambio
+        else:
+            return valor
 
     return {
-        "Investimento Desejado": f"{investimento_desejado:,.2f} USD",
+        "Investimento Desejado": f"{converter_para_moeda(investimento_desejado, moeda):,.2f} {moeda}",
         "Distribuição de Lucro para o Investidor": f"{distribuicao_lucro * 100:.2f}%",
-        "Custos Fixos (Mês)": f"{custos_fixos_mensais:,.2f} USD",
-        "Custos Fixos (Ano)": f"{custos_fixos_mensais * 12:,.2f} USD",
+        "Custos Fixos (Mês)": f"{converter_para_moeda(custos_fixos_mensais, moeda):,.2f} {moeda}",
+        "Custos Fixos (Ano)": f"{converter_para_moeda(custos_fixos_mensais * 12, moeda):,.2f} {moeda}",
         "Margem de Lucro": f"{margem_lucro * 100:.2f}%",
-        "Faturamento Anual Previsto": f"{faturamento_necessario_anual:,.2f} USD",
-        "Faturamento Mensal Previsto": f"{faturamento_necessario_mensal:,.2f} USD",
+        "Faturamento Anual Previsto": f"{converter_para_moeda(faturamento_necessario_anual, moeda):,.2f} {moeda}",
+        "Faturamento Mensal Previsto": f"{converter_para_moeda(faturamento_necessario_mensal, moeda):,.2f} {moeda}",
         "Número de Vendas com 100% de Comissão (Ano)": f"{int(numero_vendas_com_100_comissao_ano)} imóveis ou clientes",
         "Número de Vendas com 30% de Comissão (Mês)": f"{int(numero_vendas_com_30_comissao_mes)} imóveis ou clientes",
-        "Valor de Administração (30%)": f"{faturamento_necessario_mensal * 0.30:,.2f} USD",
+        "Valor de Administração (30%)": f"{converter_para_moeda(faturamento_necessario_mensal * 0.30, moeda):,.2f} {moeda}",
         "Tempo para Recuperar Investimento Inicial (cada sócio)": "Aproximadamente 7,5 meses",
-        "Meta do Mês para Bater o Faturamento Mensal Médio": f"{faturamento_necessario_mensal:,.2f} USD",
-        "Valor para Investidores (anual)": f"{faturamento_necessario_anual * distribuicao_lucro_investidor:,.2f} USD",
-        "Valor para Investidores (mensal)": f"{faturamento_necessario_mensal * distribuicao_lucro_investidor:,.2f} USD",
+        "Meta do Mês para Bater o Faturamento Mensal Médio": f"{converter_para_moeda(faturamento_necessario_mensal, moeda):,.2f} {moeda}",
+        "Valor para Investidores (anual)": f"{converter_para_moeda(faturamento_necessario_anual * distribuicao_lucro_investidor, moeda):,.2f} {moeda}",
+        "Valor para Investidores (mensal)": f"{converter_para_moeda(faturamento_necessario_mensal * distribuicao_lucro_investidor, moeda):,.2f} {moeda}",
         "Distribuição de Lucro para Sócio Fundador": f"{distribuicao_lucro_fundador * 100:.2f}%",
-        "Valor para Sócio Fundador (anual)": f"{valor_fundador_anual:,.2f} USD",
-        "Valor para Sócio Fundador (mensal)": f"{valor_fundador_mensal:,.2f} USD",
-        "Notas": f"Valor para Sócio Fundador (anual): {valor_fundador_anual * 5:,.2f} BRL\nValor para Sócio Fundador (mensal): {valor_fundador_mensal * 5:,.2f} BRL",
+        "Valor para Sócio Fundador (anual)": f"{converter_para_moeda(valor_fundador_anual, moeda):,.2f} {moeda}",
+        "Valor para Sócio Fundador (mensal)": f"{converter_para_moeda(valor_fundador_mensal, moeda):,.2f} {moeda}",
+        "Notas": f"Valor para Sócio Fundador (anual): {converter_para_moeda(valor_fundador_anual * 5, moeda):,.2f} {moeda}\nValor para Sócio Fundador (mensal): {converter_para_moeda(valor_fundador_mensal * 5, moeda):,.2f} {moeda}",
         "Rentabilidade Mensal (Investidores)": f"{rentabilidade_mensal_investidores * 100:.2f}%",
         "Rentabilidade Mensal (Sócio Fundador)": f"{rentabilidade_mensal_fundador * 100:.2f}%",
-        "Valor por Venda/Assinatura": f"{valor_por_venda:,.2f} USD"
+        "Valor por Venda/Assinatura": f"{converter_para_moeda(valor_por_venda, moeda):,.2f} {moeda}"
     }
 
 def atualizar_tabelas():
@@ -101,24 +105,24 @@ def atualizar_tabelas():
             "Rentabilidade Mensal (Sócio Fundador)": "70,00%"
         },
         2040: {
-            "Investimento Desejado": "10.000.000 USD",
+            "Investimento Desejado": "1.000.000 USD",
             "Distribuição de Lucro para o Investidor": "30%",
-            "Custos Fixos (Mês)": "4.901.960,78 USD",
-            "Custos Fixos (Ano)": "58.823.529,41 USD",
+            "Custos Fixos (Mês)": "490.196,08 USD",
+            "Custos Fixos (Ano)": "5.882.352,94 USD",
             "Margem de Lucro": "50%",
-            "Faturamento Anual Previsto": "117.647.058,82 USD",
-            "Faturamento Mensal Previsto": "9.803.921,57 USD",
-            "Número de Vendas com 100% de Comissão (Ano)": "12.000 imóveis",
-            "Número de Vendas com 30% de Comissão (Mês)": "1.000 imóveis",
-            "Valor de Administração (30%)": "2.941.176,47 USD",
+            "Faturamento Anual Previsto": "11.764.705,88 USD",
+            "Faturamento Mensal Previsto": "980.392,86 USD",
+            "Número de Vendas com 100% de Comissão (Ano)": "1.200 imóveis",
+            "Número de Vendas com 30% de Comissão (Mês)": "100 imóveis",
+            "Valor de Administração (30%)": "294.117,65 USD",
             "Tempo para Recuperar Investimento Inicial (cada sócio)": "Aproximadamente 7,5 meses",
-            "Meta do Mês para Bater o Faturamento Mensal Médio": "9.803.921,57 USD",
-            "Valor para Investidores (anual)": "3.000.000,00 USD",
-            "Valor para Investidores (mensal)": "250.000,00 USD",
+            "Meta do Mês para Bater o Faturamento Mensal Médio": "980.392,86 USD",
+            "Valor para Investidores (anual)": "300.000,00 USD",
+            "Valor para Investidores (mensal)": "25.000,00 USD",
             "Distribuição de Lucro para Sócio Fundador": "70%",
-            "Valor para Sócio Fundador (anual)": "84.000.000,00 USD",
-            "Valor para Sócio Fundador (mensal)": "7.000.000,00 USD",
-            "Notas": "Valor para Sócio Fundador (anual): 420.000.000 BRL\nValor para Sócio Fundador (mensal): 35.000.000 BRL",
+            "Valor para Sócio Fundador (anual)": "8.400.000,00 USD",
+            "Valor para Sócio Fundador (mensal)": "700.000,00 USD",
+            "Notas": "Valor para Sócio Fundador (anual): 42.000.000 BRL\nValor para Sócio Fundador (mensal): 3.500.000 BRL",
             "Rentabilidade Mensal (Investidores)": "30,00%",
             "Rentabilidade Mensal (Sócio Fundador)": "70,00%"
         }
@@ -134,15 +138,22 @@ def main():
     distribuicao_lucro = st.slider("Distribuição de Lucro para o Investidor", min_value=0.0, max_value=1.0, value=0.30, step=0.01)
     custos_fixos_mensais = st.number_input("Custos Fixos Mensais (USD)", value=49019.61)
     margem_lucro = st.slider("Margem de Lucro", min_value=0.0, max_value=1.0, value=0.50, step=0.01)
+    valor_por_venda = st.number_input("Valor por Venda/Assinatura (USD)", value=5000.00)
+    taxa_cambio = st.number_input("Taxa de Câmbio (USD para BRL)", value=5.00)
+
+    # Currency filter
+    moeda = st.sidebar.selectbox("Escolha a Moeda", options=["USD", "BRL"])
 
     # Button to calculate
     if st.button("Calcular"):
         # Calculations
-        resultados = calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_mensais, margem_lucro)
+        resultados = calcular_valores(investimento_desejado, distribuicao_lucro, custos_fixos_mensais, margem_lucro, valor_por_venda, taxa_cambio)
 
         # Display results
         st.write("### Resultados Calculados")
         for chave, valor in resultados.items():
+            if moeda == "BRL" and "USD" in valor:
+                valor = valor.replace("USD", "BRL")
             st.write(f"**{chave}:** {valor}")
 
     # Sidebar for static data
@@ -160,6 +171,6 @@ def main():
 
         st.write("### Dados Estáticos")
         st.write(pd.DataFrame(dados[ano_selecionado].items(), columns=['Campo', 'Valor']).set_index('Campo'))
-    
+
 if __name__ == "__main__":
     main()
