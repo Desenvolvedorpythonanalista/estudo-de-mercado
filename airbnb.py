@@ -1,5 +1,6 @@
-import streamlit as st
+import streamlit as st 
 import pandas as pd
+import numpy as np
 from io import BytesIO
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
@@ -12,22 +13,22 @@ def calcular_parcela(valor_imovel, entrada, taxa_juros, prazo_anos):
     taxa_juros_mensal = taxa_juros / 12 / 100
     prazo_meses = prazo_anos * 12
     parcela = valor_financiado * taxa_juros_mensal * (1 + taxa_juros_mensal) ** prazo_meses / ((1 + taxa_juros_mensal) ** prazo_meses - 1)
-    return parcela
+    return parcela, valor_financiado
 
 # Função para calcular a receita mensal e lucro
 def calcular_renda(valor_diaria, qtd_imoveis, dias_ocupacao, custos_fixos, taxa_administracao, valor_reserva_emergencia):
     receita_mensal_total = valor_diaria * qtd_imoveis * dias_ocupacao
     custo_administracao = receita_mensal_total * (taxa_administracao / 100)
     reserva_emergencia = valor_reserva_emergencia
-    total_custos_mensais = custos_fixos + calcular_parcela(valor_imovel, entrada, taxa_juros, prazo_anos) + custo_administracao + reserva_emergencia
+    total_custos_mensais = custos_fixos + calcular_parcela(valor_imovel, entrada, taxa_juros, prazo_anos)[0] + custo_administracao + reserva_emergencia
     lucro_mensal = receita_mensal_total - total_custos_mensais
     return receita_mensal_total, custo_administracao, reserva_emergencia, total_custos_mensais, lucro_mensal
 
-# Função para calcular o tempo necessário para alcançar o valor da parcela
-def tempo_para_alcancar(valor_parcela, valor_diaria, qtd_imoveis):
-    receita_diaria_total = valor_diaria * qtd_imoveis
-    tempo_dias = valor_parcela / receita_diaria_total
-    return int(-(-tempo_dias // 1))  # Arredondar sempre para cima
+# Função para calcular o tempo necessário para alcançar o valor da entrada
+def tempo_para_alcancar(valor_entrada, lucro_mensal):
+    if lucro_mensal <= 0:
+        return float('inf')  # Retorna infinito se o lucro mensal for 0 ou negativo
+    return valor_entrada / lucro_mensal
 
 # Função para calcular o valor total pago ao final do financiamento
 def calcular_valor_total_pago(valor_parcela, prazo_anos):
@@ -79,35 +80,14 @@ def gerar_pdf(tabelas):
 st.title('Virtus Life Global LLC. Investimentos')
 
 # Introdução e Instruções
-st.write("""
-### Bem-vindo ou Bem-vinda à nossa Simulação de Investimentos Imobiliários e Renda com Aluguéis!
+st.write(""" 
+### Bem-vindo ou Bem-vinda à nossa Simulação de Investimentos Imobiliários e Renda com Aluguéis! 
 
 Esta ferramenta ajuda você a avaliar a viabilidade financeira do seu investimento imobiliário, calculando parcelas de financiamento e potencial de lucro com aluguel de curto prazo (como no Airbnb). 
 
 #### Como Usar:
 1. **Preencha os campos abaixo** com as informações do seu imóvel e financiamento.
 2. **Clique em "Calcular"** para ver os resultados.
-
-#### Campos de Entrada:
-- **Valor do Imóvel**: Indique o valor total do imóvel que você pretende financiar.
-- **Entrada (%)**: Informe o percentual do valor do imóvel que será pago como entrada.
-- **Taxa de Juros Anual (%)**: Forneça a taxa de juros anual do financiamento.
-- **Prazo do Financiamento (anos)**: Defina o número de anos para quitar o financiamento.
-- **Renda Desejada**: Determine a renda mensal que você deseja obter com o aluguel.
-- **Diária por Imóvel**: Especifique o valor que será cobrado por dia de aluguel.
-- **Custos Fixos Mensais**: Informe as despesas fixas mensais que você terá.
-- **Quantidade de Imóveis**: Informe o número de imóveis que você pretende alugar.
-- **Taxa de Administração (%)**: Indique o percentual da receita mensal que será gasto com administração.
-- **Valor para Reserva de Emergência**: Determine a quantia destinada a cobrir emergências.
-- **Percentual de Lucro Mensal para Reinvestir (%)**: Defina o percentual do lucro mensal que você planeja reinvestir.
-
-#### Resultados
-Após preencher os campos e clicar em "Calcular", a ferramenta gerará os seguintes resultados:
-- **Tabelas de Financiamento Imobiliário**: Informações detalhadas sobre o seu financiamento.
-- **Tabela de Renda Airbnb**: Cálculos da renda mensal baseada nas diárias e ocupação.
-- **Tempo para Alcançar o Valor da Parcela**: Quanto tempo você precisará para gerar receita suficiente para cobrir a parcela do financiamento.
-- **Receita Líquida e Lucro Após Custos**: Visão geral dos custos e lucros.
-- **Reinvestimento Baseado no Lucro Mensal Após Custos**: Quanto você pode reinvestir e quanto lucro você manterá.
 
 Você pode recalcular quantas vezes quiser, ajustando os valores conforme necessário. Se precisar de ajuda, estamos à disposição! Se tiver qualquer dúvida ou sugestão, pode enviar uma mensagem para o meu WhatsApp: (91) 99942-5135.
 """)
@@ -127,37 +107,52 @@ custos_fixos = st.number_input('Custos Fixos Mensais', value=None, step=100)
 qtd_imoveis = st.number_input('Quantidade de Imóveis', value=None, step=1)
 taxa_administracao = st.number_input('Taxa de Administração (%)', value=None, step=0.5)
 valor_reserva_emergencia = st.number_input('Valor para Reserva de Emergência', value=None, step=100)
+dias_ocupacao = st.number_input('Dias de Ocupação', value=None, step=1)
 percentual_reinvestir = st.number_input('Percentual de Lucro Mensal para Reinvestir (%)', value=None, step=1.0)
 
-# Campos adicionais
-regras_casa = st.text_input('Regras da Casa', '')
-faixa_etaria = st.text_input('Faixa Etária Preferida', '')
-melhores_meses = st.text_input('Melhores Meses', '')
-meses_sazonalidade = st.text_input('Meses de Sazonalidade', '')
+# Campo para o IRRF
+irrf_percentual = st.number_input('Alíquota do IRRF (%)', value=15.0, step=0.5)
+
+# Campos adicionais com checkboxes
+show_opcionais = st.checkbox("Mostrar campos adicionais")
+if show_opcionais:
+    regras_casa = st.text_input('Regras da Casa', '')
+    faixa_etaria = st.text_input('Faixa Etária Preferida', '')
+    melhores_meses = st.text_input('Melhores Meses', '')
+    meses_sazonalidade = st.text_input('Meses de Sazonalidade', '')
+    recomendacoes_melhorias = st.text_input('Recomendações e Melhorias do Mês', '')
+    gastos_cortados = st.text_input('Gastos que Podem Ser Cortados', '')
+    problemas_encontrados = st.text_input('Problemas Encontrados', '')
 
 # Botão para calcular
 if st.button('Calcular'):
-    if all([valor_imovel, entrada_percentual, taxa_juros, prazo_anos, renda_desejada, valor_diaria, custos_fixos, qtd_imoveis, taxa_administracao, valor_reserva_emergencia]):
+    if all([valor_imovel, entrada_percentual, taxa_juros, prazo_anos, renda_desejada, valor_diaria,
+             custos_fixos, qtd_imoveis, taxa_administracao, valor_reserva_emergencia, dias_ocupacao,
+             percentual_reinvestir]):
+        
         # Cálculos
-        valor_parcela = calcular_parcela(valor_imovel, entrada, taxa_juros, prazo_anos)
+        valor_parcela, valor_financiado = calcular_parcela(valor_imovel, entrada, taxa_juros, prazo_anos)
         receita_mensal_total, custo_administracao, reserva_emergencia, total_custos_mensais, lucro_mensal = calcular_renda(
-            valor_diaria, qtd_imoveis, 30, custos_fixos, taxa_administracao, valor_reserva_emergencia
+            valor_diaria, qtd_imoveis, dias_ocupacao, custos_fixos, taxa_administracao, valor_reserva_emergencia
         )
-        tempo_dias = tempo_para_alcancar(valor_parcela, valor_diaria, qtd_imoveis)
-        valor_total_pago = calcular_valor_total_pago(valor_parcela, prazo_anos)
-        valor_reinvestir = lucro_mensal * (percentual_reinvestir / 100)
-        lucro_nao_distribuido = lucro_mensal - valor_reinvestir
-
+        
+        # Cálculo do IRRF
+        irrf_valor = (lucro_mensal * (irrf_percentual / 100)) if lucro_mensal > 0 else 0
+        lucro_liquido = lucro_mensal - irrf_valor
+        
+        # Tempo para retorno do investimento
+        tempo_retorno = tempo_para_alcancar(entrada, lucro_mensal)
+        
         # Resultados
         tabelas = [
             ('Tabela de Financiamento Imobiliário', [
                 ['Valor do Imóvel', formatar_valor(valor_imovel, moeda)],
                 ['Entrada (%)', f'{entrada_percentual}%'],
+                ['Valor da Entrada', formatar_valor(entrada, moeda)],
                 ['Taxa de Juros Anual', f'{taxa_juros}%'],
                 ['Valor da Parcela (aprox.)', formatar_valor(valor_parcela, moeda)],
-                ['Valor da Parcela em 10 anos (aprox.)', formatar_valor(calcular_parcela(valor_imovel, entrada, taxa_juros, 10), moeda)],
-                ['Valor da Parcela em 5 anos (aprox.)', formatar_valor(calcular_parcela(valor_imovel, entrada, taxa_juros, 5), moeda)],
-                ['Valor Total Pago ao Final do Financiamento', formatar_valor(valor_total_pago, moeda)]
+                ['Valor Financiado', formatar_valor(valor_financiado, moeda)],
+                ['Valor Total Pago ao Final do Financiamento', formatar_valor(calcular_valor_total_pago(valor_parcela, prazo_anos), moeda)]
             ]),
             ('Tabela de Renda Airbnb', [
                 ['Renda Desejada', formatar_valor(renda_desejada, moeda)],
@@ -167,7 +162,7 @@ if st.button('Calcular'):
             ('Tempo para Alcançar o Valor da Parcela', [
                 ['Período de Amortização', f'{prazo_anos} anos'],
                 ['Valor da Parcela', formatar_valor(valor_parcela, moeda)],
-                ['Tempo para Alcançar o Valor da Parcela (dias)', tempo_dias]
+                ['Tempo para Alcançar o Valor da Parcela (dias)', round(tempo_retorno * 30, 2)]
             ]),
             ('Receita Líquida e Lucro Após Custos', [
                 ['Receita Mensal Total', formatar_valor(receita_mensal_total, moeda)],
@@ -176,21 +171,34 @@ if st.button('Calcular'):
                 ['Administração', formatar_valor(custo_administracao, moeda)],
                 ['Reserva de Emergência', formatar_valor(reserva_emergencia, moeda)],
                 ['Total de Custos Mensais', formatar_valor(total_custos_mensais, moeda)],
-                ['Lucro Mensal (Após Custos)', formatar_valor(lucro_mensal, moeda)]
+                ['Lucro Mensal (Após Custos)', formatar_valor(lucro_mensal, moeda)],
+                ['IRRF (Retido na Fonte)', formatar_valor(irrf_valor, moeda)],
+                ['Lucro Líquido (Após IRRF)', formatar_valor(lucro_liquido, moeda)]
+            ]),
+            ('Tempo de Retorno do Investimento', [
+                ['Valor da Entrada', formatar_valor(entrada, moeda)],
+                ['Receita Mensal Total', formatar_valor(receita_mensal_total, moeda)],
+                ['Tempo para Retornar o Investimento (meses)', round(tempo_retorno, 2)]
             ]),
             ('Reinvestimento Baseado no Lucro Mensal Após Custos', [
                 ['Lucro Mensal (Após Custos)', formatar_valor(lucro_mensal, moeda)],
                 ['Percentual para Reinvestir', f'{percentual_reinvestir}%'],
-                ['Valor a Reinvestir', formatar_valor(valor_reinvestir, moeda)],
-                ['Lucro Não Distribuído', formatar_valor(lucro_nao_distribuido, moeda)]
+                ['Valor a Reinvestir', formatar_valor(lucro_liquido * (percentual_reinvestir / 100), moeda)],
+                ['Lucro Não Distribuído', formatar_valor(lucro_liquido * (1 - percentual_reinvestir / 100), moeda)]
             ]),
-            ('Dados Airbnb com Estadia Mínima de 3 Dias', [
+        ]
+
+        # Adicionando dados opcionais, se preenchidos
+        if show_opcionais:
+            tabelas.append(('Dados Airbnb com Estadia Mínima de 3 Dias', [
                 ['Regras da Casa', regras_casa],
                 ['Faixa Etária Preferida', faixa_etaria],
                 ['Melhores Meses', melhores_meses],
-                ['Meses de Sazonalidade', meses_sazonalidade]
-            ])
-        ]
+                ['Meses de Sazonalidade', meses_sazonalidade],
+                ['Recomendações e Melhorias do Mês', recomendacoes_melhorias],
+                ['Gastos que Podem Ser Cortados', gastos_cortados],
+                ['Problemas Encontrados', problemas_encontrados]
+            ]))
 
         # Gerar e exibir o PDF
         pdf_output = gerar_pdf(tabelas)
@@ -203,7 +211,7 @@ if st.button('Calcular'):
         )
 
         # Mostrar Introdução e Resultados
-        st.write("""
+        st.write(""" 
         ### Resultados Gerados com Sucesso!
 
         O cálculo foi realizado com base nas informações fornecidas. Confira os detalhes abaixo e ajuste qualquer valor, se necessário. Você pode recalcular a qualquer momento, alterando os valores nos campos acima e clicando em "Calcular" novamente. Se precisar de ajuda, estamos à disposição! Se tiver qualquer dúvida ou sugestão, pode enviar uma mensagem para o meu WhatsApp: (91) 99942-5135.
