@@ -219,7 +219,7 @@ if tipo_investimento == 'Imóveis no Brasil':
         else:
             st.warning("Por favor, preencha todos os campos antes de calcular.")
 
-elif tipo_investimento == 'Investimentos no Exterior':
+if tipo_investimento == 'Investimentos no Exterior':
     st.write(""" 
     ### Investimentos em Imóveis nos EUA
 
@@ -243,7 +243,6 @@ elif tipo_investimento == 'Investimentos no Exterior':
     """)
 
     # Campos para o usuário inserir os dados
-     # Campos para o usuário inserir os dados
     custo_pedido = st.number_input("Custo do Prédio/Casa (USD):", min_value=0.0, format="%.2f")
     unidades = st.number_input("Número de Unidades:", min_value=1, format="%d")
     aluguel_mensal_unidade = st.number_input("Aluguel Mensal por Unidade (USD):", min_value=0.0, format="%.2f")
@@ -263,8 +262,8 @@ elif tipo_investimento == 'Investimentos no Exterior':
     custo_total = custo_pedido + custo_reforma + valor_documentacao
 
     # Cálculo do financiamento e investimento próprio
-    valor_financiamento = 0.6 * custo_total  # 60% do custo total
-    investimento_proprio = 0.4 * custo_total  # 40% do custo total
+    valor_financiamento = porcentagem_financiada * custo_total  # Porcentagem financiada do custo total
+    investimento_proprio = custo_total - valor_financiamento  # Investimento próprio
 
     # Cálculo do valor de venda após valorização
     valor_venda = (custo_pedido + custo_reforma) * (1 + valorizacao_percentual)
@@ -326,7 +325,7 @@ elif tipo_investimento == 'Investimentos no Exterior':
         ]),
         ('Retorno sobre o Investimento (ROI)', [
             ['Descrição', 'Valor (%)'],
-            ['Taxa de Retorno (%)', f'{(lucro_liquido / custo_total) * 100:.2f}%']
+            ['Taxa de Retorno (%)', f'{(lucro_liquido / custo_total * 100) if custo_total > 0 else 0:.2f}%']
         ]),
     ]
 
