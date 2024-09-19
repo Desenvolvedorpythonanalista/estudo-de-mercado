@@ -154,7 +154,7 @@ if st.button('Calcular'):
                 ['Valor Financiado', formatar_valor(valor_financiado, moeda)],
                 ['Valor Total Pago ao Final do Financiamento', formatar_valor(calcular_valor_total_pago(valor_parcela, prazo_anos), moeda)]
             ]),
-            ('Tabela de Renda Airbnb', [
+            ('Renda', [
                 ['Renda Desejada', formatar_valor(renda_desejada, moeda)],
                 ['Diária por Imóvel', formatar_valor(valor_diaria, moeda)],
                 ['Receita Mensal Total (1 imóvel)', formatar_valor(receita_mensal_total, moeda)]
@@ -162,7 +162,7 @@ if st.button('Calcular'):
             ('Tempo para Alcançar o Valor da Parcela', [
                 ['Período de Amortização', f'{prazo_anos} anos'],
                 ['Valor da Parcela', formatar_valor(valor_parcela, moeda)],
-                ['Tempo para Alcançar o Valor da Parcela (dias)', round(tempo_retorno * 30, 2)]
+                ['Tempo para Alcançar o Valor da Parcela (dias)', int(np.ceil(tempo_retorno * 30))]
             ]),
             ('Receita Líquida e Lucro Após Custos', [
                 ['Receita Mensal Total', formatar_valor(receita_mensal_total, moeda)],
@@ -178,7 +178,7 @@ if st.button('Calcular'):
             ('Tempo de Retorno do Investimento', [
                 ['Valor da Entrada', formatar_valor(entrada, moeda)],
                 ['Receita Mensal Total', formatar_valor(receita_mensal_total, moeda)],
-                ['Tempo para Retornar o Investimento (meses)', round(tempo_retorno, 2)]
+                ['Tempo para Retornar o Investimento (meses)', int(np.ceil(tempo_retorno))]
             ]),
             ('Reinvestimento Baseado no Lucro Mensal Após Custos', [
                 ['Lucro Mensal (Após Custos)', formatar_valor(lucro_mensal, moeda)],
