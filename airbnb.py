@@ -1,4 +1,4 @@
-import streamlit as st 
+import streamlit as st
 import pandas as pd
 import numpy as np
 from io import BytesIO
@@ -162,7 +162,7 @@ if st.button('Calcular'):
             ('Tempo para Alcançar o Valor da Parcela', [
                 ['Período de Amortização', f'{prazo_anos} anos'],
                 ['Valor da Parcela', formatar_valor(valor_parcela, moeda)],
-                ['Tempo para Alcançar o Valor da Parcela (dias)', int(np.ceil(tempo_retorno * 30))]
+                ['Tempo para Alcançar o Valor da Parcela (dias)', int(np.ceil(tempo_retorno * 30))]  # Arredondado para cima
             ]),
             ('Receita Líquida e Lucro Após Custos', [
                 ['Receita Mensal Total', formatar_valor(receita_mensal_total, moeda)],
@@ -178,7 +178,7 @@ if st.button('Calcular'):
             ('Tempo de Retorno do Investimento', [
                 ['Valor da Entrada', formatar_valor(entrada, moeda)],
                 ['Receita Mensal Total', formatar_valor(receita_mensal_total, moeda)],
-                ['Tempo para Retornar o Investimento (meses)', int(np.ceil(tempo_retorno))]
+                ['Tempo para Retornar o Investimento (meses)', int(np.ceil(tempo_retorno))]  # Arredondado para cima
             ]),
             ('Reinvestimento Baseado no Lucro Mensal Após Custos', [
                 ['Lucro Mensal (Após Custos)', formatar_valor(lucro_mensal, moeda)],
